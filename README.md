@@ -1,7 +1,6 @@
 # Geus
 
 Uma ferramenta open source, que serve como interface gráfica para a API GitStormServer.
-
 Um projeto com o intúito de conseguir gerenciar repositórios git dentro do servidor de forma gratuita.
 
 ## Versões

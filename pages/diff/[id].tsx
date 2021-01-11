@@ -23,18 +23,23 @@ const Diff: React.FC = () => {
 
     useEffect(() => {
         async function takeDiff() {
-            const body = { origin, destination }
-            const { data: { data } } = await axios.post(`http://localhost:3001/diff/${repos}/${id}`, body);
-            const diffs: Array<string> = data.filter(item => item !== '');
+            const { data } = await axios.get(`http://localhost:3001/diff/${repos}/${id}`);
 
-            const auxConfilcts: Array<number> = [];
-            diffs.forEach((file, index) => {
-                if (file.indexOf('++<<<<<<< HEAD')) {
-                    auxConfilcts.push(index);
-                }
-            })
-            setConflicts(auxConfilcts);
-            setDiff(diffs);
+            if (!data.error) {
+                const diffs: Array<string> = data.data.filter(item => item !== '');
+
+                const auxConfilcts: Array<number> = [];
+                diffs.forEach((file, index) => {
+                    if (file.indexOf('++<<<<<<< HEAD')) {
+                        auxConfilcts.push(index);
+                    }
+                })
+                setConflicts(auxConfilcts);
+                setDiff(diffs);
+            } else {
+                document.write(data.data)
+            }
+
         };
 
         takeDiff();

@@ -30,10 +30,10 @@ const Diff: React.FC = () => {
 
                 const auxConfilcts: Array<number> = [];
                 diffs.forEach((file, index) => {
-                    if (file.indexOf('++<<<<<<< HEAD')) {
+                    if (file.indexOf('++<<<<<<< HEAD') !== -1) {
                         auxConfilcts.push(index);
                     }
-                })
+                });
                 setConflicts(auxConfilcts);
                 setDiff(diffs);
             } else {
@@ -75,7 +75,6 @@ const Diff: React.FC = () => {
             {
                 diff && diff.map((item, index) => {
                     if (conflicts.length > 0) {
-                        console.log(conflicts.indexOf(index))
                         if (conflicts.indexOf(index) !== -1) {
                             return (
                                 <div>
@@ -89,6 +88,8 @@ const Diff: React.FC = () => {
                 }) || "no changes"}
 
             <Button variant="success" disabled={!diff || conflicts.length > 0} onClick={onHandlerMerge}>Merge</Button>
+            <br />
+            <br />
         </Container >
     )
 }

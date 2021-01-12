@@ -23,18 +23,23 @@ const Diff: React.FC = () => {
 
     useEffect(() => {
         async function takeDiff() {
-            const body = { origin, destination }
-            const { data: { data } } = await axios.post(`http://localhost:3001/diff/${repos}/${id}`, body);
-            const diffs: Array<string> = data.filter(item => item !== '');
+            const { data } = await axios.get(`http://localhost:3001/diff/${repos}/${id}`);
 
-            const auxConfilcts: Array<number> = [];
-            diffs.forEach((file, index) => {
-                if (file.indexOf('++<<<<<<< HEAD')) {
-                    auxConfilcts.push(index);
-                }
-            })
-            setConflicts(auxConfilcts);
-            setDiff(diffs);
+            if (!data.error) {
+                const diffs: Array<string> = data.data.filter(item => item !== '');
+
+                const auxConfilcts: Array<number> = [];
+                diffs.forEach((file, index) => {
+                    if (file.indexOf('++<<<<<<< HEAD') !== -1) {
+                        auxConfilcts.push(index);
+                    }
+                });
+                setConflicts(auxConfilcts);
+                setDiff(diffs);
+            } else {
+                alert(data.data)
+            }
+
         };
 
         takeDiff();
@@ -70,7 +75,6 @@ const Diff: React.FC = () => {
             {
                 diff && diff.map((item, index) => {
                     if (conflicts.length > 0) {
-                        console.log(conflicts.indexOf(index))
                         if (conflicts.indexOf(index) !== -1) {
                             return (
                                 <div>
@@ -84,6 +88,8 @@ const Diff: React.FC = () => {
                 }) || "no changes"}
 
             <Button variant="success" disabled={!diff || conflicts.length > 0} onClick={onHandlerMerge}>Merge</Button>
+            <br />
+            <br />
         </Container >
     )
 }

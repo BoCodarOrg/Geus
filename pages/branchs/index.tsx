@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-
-import { Button, Container, Table } from 'react-bootstrap';
 import axios from 'axios';
 import uuid from 'react-uuid';
 
 import { useRouter } from 'next/router';
+import { Container } from '../../src/styles/main';
+import List from '../../src/components/List';
 
 export interface BranchModel {
     id?: number,
@@ -37,38 +35,26 @@ const Branchs: React.FC = () => {
 
     const onHandlerCreatePullrequest = (item, e) => {
         e.stopPropagation();
-        route.push({ pathname: `/pullRequest/${uuid()}`, query: { branch: item.name, repoName: route.query.repoName } });
+        route.push({ pathname: `/pullRequest/${uuid()}`, query: { branch: item.name, repoName: route.query.repoName, repoId: route.query.repoId } });
     }
 
     return (
         <Container>
-            <br />
-            <h1>Branches List</h1>
-            <Table striped bordered hover variant="dark" >
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Branch Name</th>
-                        <th>Pull request</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        branches ? branches.map((item, i) => {
-                            return (
-                                <tr key={item.name} onClick={() => onHandlerClickCommit(item)}>
-                                    <th>{i}</th>
-                                    <th>{item.name}</th>
-                                    <th><Button variant="primary"
-                                        onClick={(e) => onHandlerCreatePullrequest(item, e)}>Create pull request</Button></th>
-                                </tr>
-                            )
-                        }) :
-                            (<tr><th>Loading...</th></tr>)
-                    }
-
-                </tbody>
-            </Table>
+            <List>
+                {
+                    branches ? branches.map((item, i) => {
+                        return (
+                            <li key={item.name} onClick={() => onHandlerClickCommit(item)}>
+                                <div>
+                                    <h1>{item.name.replace('*', '').trim()}</h1>
+                                </div>
+                                <button onClick={(e) => onHandlerCreatePullrequest(item, e)}>Create pull request</button>
+                            </li>
+                        )
+                    }) :
+                        (<p>Loading...</p>)
+                }
+            </List>
         </Container>
     )
 };

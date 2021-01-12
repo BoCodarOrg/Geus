@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Router, useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 
-import Table from 'react-bootstrap/Table'
-
-import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import { Container } from 'react-bootstrap';
+import { Container } from '../src/styles/main';
+import List from '../src/components/List';
+import Title from '../src/components/Title';
 
 export interface RepoModel {
     id?: number,
     name?: string
+    description?: string
+    language?: string
 }
+
 
 const App: React.FC = () => {
     const [repos, setRepos] = useState<Array<RepoModel>>();
+    const [pullrequests, setPullRequests] = useState([]);
     const route = useRouter();
 
     useEffect(() => {
@@ -22,44 +25,92 @@ const App: React.FC = () => {
             setRepos(response.data.data);
         }
 
+
+        async function takePullrequests() {
+            const response = await axios.get('http://localhost:3001/pullrequests/index');
+            setPullRequests(response.data.data);
+        }
+
+        takePullrequests();
         takeRepositories();
-    }, [repos])
+    }, [])
 
 
     const onHandlerClickRepository = (item) => {
         route.push({
             pathname: '/branchs',
-            query: { repoName: item.name.replace('/', '') }
+            query: { repoName: item.name.replace('/', ''), repoId: item.id }
         });
+    }
+
+    const onHandlerClickPullRequest = (item) => {
+        route.push({
+            pathname: `/diff/${item.hash}`,
+            query: {
+                title: item.title,
+                description: item.description,
+                origin: item.origin,
+                destination: item.destination,
+                repos: item.Repository.name
+            }
+        })
     }
 
     return (
         <Container>
+            <Title>Repositórios</Title>
             <br />
-            <h1>Repositories List</h1>
-            <Table striped bordered hover variant="dark">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Repository Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {
-                        repos ? repos.map((item, i) => {
-                            return (
-                                <tr key={item.name} onClick={() => onHandlerClickRepository(item)}>
-                                    <td>{i}</td>
-                                    <td>{item.name}</td>
-                                </tr>
-                            )
-                        })
-                            :
-                            (<th><tr>Loading...</tr></th>)
-                    }
+            <List>
+                {
+                    repos ? repos.map((item, i) => {
+                        return (
+                            <li key={item.id} onClick={() => onHandlerClickRepository(item)}>
+                                <div>
+                                    <div>
+                                        <h1>{item.name}</h1>
+                                        <p>{item.description}</p>
+                                    </div>
+                                    <div>
+                                        <p className="language" >Linguagem principal do repositório: {item.language}</p>
+                                    </div>
+                                </div>
 
-                </tbody>
-            </Table>
+                            </li>
+                        )
+                    })
+                        :
+                        (<li>Loading...</li>)
+                }
+
+            </List>
+            <br />
+            <Title>Pull Requests</Title>
+            <br />
+            <List>
+                {
+                    pullrequests && pullrequests.map(item => (
+                        <li key={item.id} onClick={() => onHandlerClickPullRequest(item)}>
+                            <div>
+                                <div>
+                                    <h1>{item.title}</h1>
+                                    <p>{item.description}</p>
+                                </div>
+                                <div>
+                                    <center>
+                                        <p>{item.Repository.name}</p>
+                                        <p>{`${item.origin} >> ${item.destination}`}</p>
+                                    </center>
+                                </div>
+                                <div>
+                                    <p className="language">{item.User.name}</p>
+                                </div>
+
+                            </div>
+
+                        </li>
+                    ))
+                }
+            </List>
         </Container>
 
     );

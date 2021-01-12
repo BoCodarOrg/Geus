@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Table } from 'react-bootstrap';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { Container } from '../../src/styles/main';
+import Table from '../../src/components/Table';
 
 
 export interface CommitModel {
@@ -33,10 +32,7 @@ const Commits: React.FC = () => {
 
     return (
         <Container>
-            <br />
-            <h1>Commits List</h1>
-
-            <Table striped bordered hover variant="dark" >
+            <Table  >
                 <thead>
                     <tr>
                         <th>Commit</th>

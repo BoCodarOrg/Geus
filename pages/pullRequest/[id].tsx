@@ -24,7 +24,6 @@ const PullRequest: React.FC = () => {
 
     const route = useRouter();
 
-
     useEffect(() => {
         async function takeBranch() {
             const response = await axios.get(`http://localhost:3001/${route.query.repoName}/`);
@@ -41,7 +40,6 @@ const PullRequest: React.FC = () => {
             repository: route.query.repoName
         });
         setHasDiff(response.data.data);
-
     }
 
     const onHandlerCreatePullRequest = async () => {
@@ -165,6 +163,7 @@ const PullRequest: React.FC = () => {
             <label>Título do pull request</label>
             <input type="text" placeholder="Pull request title"
                 onChange={({ target: { value } }) => setTitle(value)} className="field" />
+            <p>{title ? title.length + '  ' : '0  '}/ 191</p>
             <br />
             <label>Descrição</label>
             <textarea style={{ resize: 'none' }}
@@ -172,7 +171,7 @@ const PullRequest: React.FC = () => {
                 className="field"
                 maxLength={191}
                 rows={5} placeholder="Describe your pull request..." />
-            <p>{description ? description.length+'  ' : '0  '}/ 192</p>
+            <p>{description ? description.length + '  ' : '0  '}/ 191</p>
             <br />
             <label>Adicionar reviewers</label>
             <input placeholder="Adicionar reviews" onChange={handlerSearchUsers} value={userField} />
@@ -192,5 +191,6 @@ const PullRequest: React.FC = () => {
         </Container>
     )
 };
+
 
 export default PullRequest;

@@ -34,17 +34,13 @@ const PullRequest: React.FC = () => {
         takeDiff();
     }, [])
 
-    const takeDiff = async () => {
+    const takeDiff = async (branch = '') => {
         const response = await axios.post(`http://localhost:3001/diff`, {
             origin: route.query.branch,
-            destination: selectedBranch,
+            destination: branch || selectedBranch,
             repository: route.query.repoName
         });
-        if (response.data.data) {
-            setHasDiff(true);
-        } else {
-            setHasDiff(false);
-        }
+        setHasDiff(response.data.data);
 
     }
 
@@ -132,7 +128,7 @@ const PullRequest: React.FC = () => {
                 <p>Selecione a branch de destino: </p>
                 <select onChange={({ target: { value } }) => {
                     setSelectedBranch(value);
-                    takeDiff();
+                    takeDiff(value);
                 }}>
                     {
                         branches && (
@@ -174,7 +170,9 @@ const PullRequest: React.FC = () => {
             <textarea style={{ resize: 'none' }}
                 onChange={({ target: { value } }) => setDescription(value)}
                 className="field"
+                maxLength={191}
                 rows={5} placeholder="Describe your pull request..." />
+            <p>{description ? description.length+'  ' : '0  '}/ 192</p>
             <br />
             <label>Adicionar reviewers</label>
             <input placeholder="Adicionar reviews" onChange={handlerSearchUsers} value={userField} />

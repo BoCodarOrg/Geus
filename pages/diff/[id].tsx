@@ -37,7 +37,7 @@ const Diff: React.FC = () => {
                 setConflicts(auxConfilcts);
                 setDiff(diffs);
             } else {
-                document.write(data.data)
+                alert(data.data)
             }
 
         };

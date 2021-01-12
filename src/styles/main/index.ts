@@ -44,4 +44,10 @@ export const Container = styled.div`
       border-radius: 10px;
       outline: none;
   }
+
+  button:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+  }
 `;

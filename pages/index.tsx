@@ -44,7 +44,16 @@ const App: React.FC = () => {
     }
 
     const onHandlerClickPullRequest = (item) => {
-
+        route.push({
+            pathname: `/diff/${item.hash}`,
+            query: {
+                title: item.title,
+                description: item.description,
+                origin: item.origin,
+                destination: item.destination,
+                repos: item.Repository.name
+            }
+        })
     }
 
     return (
@@ -80,12 +89,22 @@ const App: React.FC = () => {
             <List>
                 {
                     pullrequests && pullrequests.map(item => (
-                        <li key={item.id} onClick={() => onHandlerClickRepository(item)}>
+                        <li key={item.id} onClick={() => onHandlerClickPullRequest(item)}>
                             <div>
                                 <div>
                                     <h1>{item.title}</h1>
                                     <p>{item.description}</p>
                                 </div>
+                                <div>
+                                    <center>
+                                        <p>{item.Repository.name}</p>
+                                        <p>{`${item.origin} >> ${item.destination}`}</p>
+                                    </center>
+                                </div>
+                                <div>
+                                    <p className="language">{item.User.name}</p>
+                                </div>
+
                             </div>
 
                         </li>

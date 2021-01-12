@@ -20,6 +20,8 @@ const PullRequest: React.FC = () => {
     const [users, setUsers] = useState<Array<UserModel>>();
     const [reviewers, setReviewers] = useState<Array<UserModel>>([]);
     const [userField, setUserField] = useState<string>()
+    const [hasDiff, setHasDiff] = useState(false);
+
     const route = useRouter();
 
 
@@ -29,7 +31,22 @@ const PullRequest: React.FC = () => {
             setBranches(response.data.data.filter(item => item.name !== route.query.branch));
         }
         takeBranch();
+        takeDiff();
     }, [])
+
+    const takeDiff = async () => {
+        const response = await axios.post(`http://localhost:3001/diff`, {
+            origin: route.query.branch,
+            destination: selectedBranch,
+            repository: route.query.repoName
+        });
+        if (response.data.data) {
+            setHasDiff(true);
+        } else {
+            setHasDiff(false);
+        }
+
+    }
 
     const onHandlerCreatePullRequest = async () => {
         const fields: HTMLCollectionOf<Element> = document.getElementsByClassName('field');
@@ -43,7 +60,15 @@ const PullRequest: React.FC = () => {
         if (!hasEmpty) {
             const auxRev = [];
             reviewers.map(it => {
-                auxRev.push({ User: { connect: { id: it.id } }, status: 0 })
+                auxRev.push({
+                    User:
+                    {
+                        connect: {
+                            id: it.id
+                        }
+                    },
+                    status: 0
+                })
             })
             const body = {
                 origin: route.query.branch,
@@ -105,14 +130,16 @@ const PullRequest: React.FC = () => {
             <br />
             <Row>
                 <p>Selecione a branch de destino: </p>
-                <select>
+                <select onChange={({ target: { value } }) => {
+                    setSelectedBranch(value);
+                    takeDiff();
+                }}>
                     {
                         branches && (
                             branches.map(item => {
                                 return (
                                     <option key={item.name.replace('*', '')}
-                                        value={item.name.replace('*', '')}
-                                        onClick={() => { setSelectedBranch(item.name) }}>
+                                        value={item.name.replace('*', '')}>
                                         {item.name.replace('*', '')}</option>
                                 )
                             }
@@ -161,7 +188,7 @@ const PullRequest: React.FC = () => {
                 </Reviewers>)
             }
             <br />
-            <button className="link" onClick={onHandlerCreatePullRequest}>Create pull request</button>
+            <button className="link" onClick={onHandlerCreatePullRequest} disabled={!hasDiff}>Create pull request</button>
             <br />
             <br />
         </Container>

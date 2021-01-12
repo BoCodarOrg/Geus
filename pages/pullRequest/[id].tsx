@@ -162,6 +162,7 @@ const PullRequest: React.FC = () => {
             <br />
             <label>Título do pull request</label>
             <input type="text" placeholder="Pull request title"
+                maxLength={191}
                 onChange={({ target: { value } }) => setTitle(value)} className="field" />
             <p>{title ? title.length + '  ' : '0  '}/ 191</p>
             <br />

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/router';
-import axios from 'axios';
 
 
 import Refractor from 'react-refractor';
@@ -11,6 +10,7 @@ import { Container, Divider } from '../../src/styles/main';
 import { ContainerReviewer } from '../../src/styles/pullrequest';
 import { Status, Title, BoxConversation } from '../../src/styles/Diff'
 import IconUsers from '../../src/components/IconUsers';
+import Api from '../../src/server';
 
 Refractor.registerLanguage(git)
 
@@ -23,7 +23,7 @@ const Diff: React.FC = () => {
 
     useEffect(() => {
         async function takeDiff() {
-            const { data } = await axios.get(`http://localhost:3001/diff/${repos}/${id}`);
+            const { data } = await Api.get(`/diff/${repos}/${id}`);
             if (!data.error) {
                 const diffs: Array<string> = data.data.diff.filter(item => item !== '');
 
@@ -48,7 +48,7 @@ const Diff: React.FC = () => {
 
     const onHandlerMerge = async () => {
         try {
-            const response = await axios.post(`http://localhost:3001/${repos}/merge`, {
+            const response = await Api.post(`/${repos}/merge`, {
                 origin,
                 destination,
                 status: 1,

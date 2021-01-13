@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Container } from '../../src/styles/main';
 import Table from '../../src/components/Table';
+import Api from '../../src/server';
 
 
 export interface CommitModel {
@@ -22,7 +23,7 @@ const Commits: React.FC = () => {
     useEffect(() => {
         async function takeCommit() {
             const { branch, repos } = route.query;
-            const response = await axios.get(`http://localhost:3001/${repos}/${branch}/commits`);
+            const response = await Api.get(`/${repos}/${branch}/commits`);
             console.log(response.data)
             setCommits(response.data.data);
         }

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { BranchModel } from '../branchs';
-import axios from 'axios';
 import { Container } from '../../src/styles/main';
 import Row from '../../src/components/Row';
 import { Reviewers, IconReviewer, ContainerReviewer } from '../../src/styles/pullrequest';
 import { getRandomColor } from "../../src/util/randomCollors";
 import IconUsers from '../../src/components/IconUsers';
+import Api from '../../src/server';
 
 export interface UserModel {
     name: string,
@@ -27,7 +27,7 @@ const PullRequest: React.FC = () => {
 
     useEffect(() => {
         async function takeBranch() {
-            const response = await axios.get(`http://localhost:3001/${route.query.repoName}/`);
+            const response = await Api.get(`/${route.query.repoName}/`);
             setBranches(response.data.data.filter(item => item.name !== route.query.branch));
         }
         takeBranch();
@@ -35,7 +35,7 @@ const PullRequest: React.FC = () => {
     }, [])
 
     const takeDiff = async (branch = '') => {
-        const response = await axios.post(`http://localhost:3001/diff`, {
+        const response = await Api.post(`/diff`, {
             origin: route.query.branch,
             destination: branch || selectedBranch,
             repository: route.query.repoName
@@ -74,7 +74,7 @@ const PullRequest: React.FC = () => {
                 id: route.query.id,
                 reviewers: auxRev
             }
-            const { data } = await axios.post(`http://localhost:3001/pullrequest/${route.query.repoName}/${route.query.id}`, body);
+            const { data } = await Api.post(`/pullrequest/${route.query.repoName}/${route.query.id}`, body);
             if (!data.error) {
                 route.push({
                     pathname: `/diff/${route.query.id}`,
@@ -99,7 +99,7 @@ const PullRequest: React.FC = () => {
     const handlerSearchUsers = async ({ target: { value } }) => {
         setUserField(value);
         if (value) {
-            const response = await axios.get('http://localhost:3001/users/' + value);
+            const response = await Api.get('/users/' + value);
             if (response.data.data.length > 0)
                 setUsers(response.data.data);
         } else {

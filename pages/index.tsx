@@ -5,12 +5,14 @@ import axios from 'axios';
 import { Container } from '../src/styles/main';
 import List from '../src/components/List';
 import Title from '../src/components/Title';
+import { Status } from '../src/styles/pullrequest';
 
 export interface RepoModel {
     id?: number,
     name?: string
     description?: string
     language?: string
+    create_at: string
 }
 
 
@@ -47,11 +49,14 @@ const App: React.FC = () => {
         route.push({
             pathname: `/diff/${item.hash}`,
             query: {
+                status: item.status,
                 title: item.title,
+                author: item.User.user,
                 description: item.description,
                 origin: item.origin,
                 destination: item.destination,
-                repos: item.Repository.name
+                repos: item.Repository.name,
+                prId: item.id
             }
         })
     }
@@ -90,23 +95,9 @@ const App: React.FC = () => {
                 {
                     pullrequests && pullrequests.map(item => (
                         <li key={item.id} onClick={() => onHandlerClickPullRequest(item)}>
-                            <div>
-                                <div>
-                                    <h1>{item.title}</h1>
-                                    <p>{item.description}</p>
-                                </div>
-                                <div>
-                                    <center>
-                                        <p>{item.Repository.name}</p>
-                                        <p>{`${item.origin} >> ${item.destination}`}</p>
-                                    </center>
-                                </div>
-                                <div>
-                                    <p className="language">{item.User.name}</p>
-                                </div>
-
-                            </div>
-
+                            <Status status={item.status} className="inline" style={{ marginRight: '20px' }} />
+                            <p className="inline bold">{item.User.user}</p><p className="inline">/{item.Repository.name}</p><p className="inline gray" style={{ marginLeft: '10px' }}>{item.title}</p>
+                            <p>Criado: {item.create_at.split('T')[0]} | {item.status === 0 ? 'Aberto' : item.status === 1 ? 'Aprovado' : 'Rejeitado'}</p>
                         </li>
                     ))
                 }

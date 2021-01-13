@@ -51,10 +51,14 @@ const List = styled.ul`
             border: none;
         }
 
-        &:hover{
-            transform: scale(1);
-            border-radius: 10px;
-            border-bottom: 1px solid #ccc;
+        .inline {
+            display: inline-block;
+        }
+        .gray {
+            color: gray;
+        }
+        .bold {
+            font-weight: bold;
         }
 
     }

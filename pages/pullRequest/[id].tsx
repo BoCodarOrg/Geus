@@ -6,6 +6,7 @@ import { Container } from '../../src/styles/main';
 import Row from '../../src/components/Row';
 import { Reviewers, IconReviewer, ContainerReviewer } from '../../src/styles/pullrequest';
 import { getRandomColor } from "../../src/util/randomCollors";
+import IconUsers from '../../src/components/IconUsers';
 
 export interface UserModel {
     name: string,
@@ -78,6 +79,9 @@ const PullRequest: React.FC = () => {
                 route.push({
                     pathname: `/diff/${route.query.id}`,
                     query: {
+                        status: data.status,
+                        author: data.User ? data.User.user : 'LukNasc',
+                        prId: data.id,
                         title,
                         description,
                         origin: route.query.branch,
@@ -147,15 +151,8 @@ const PullRequest: React.FC = () => {
                 {
                     reviewers &&
                     reviewers.map(item => {
-                        const arr = item.name.split(' ');
-                        return (
-                            <IconReviewer
-                                color={getRandomColor()}
-                                onClick={() => onHandlerRemoveReviewer(item)}>
-                                {arr[0].charAt(0).toUpperCase()}
-                                {arr[1]?.charAt(0).toUpperCase() || ''}
-                            </IconReviewer>
-                        )
+                        return <IconUsers name={item.name} onClick={() => onHandlerRemoveReviewer(item)} />
+
                     })
                 }
             </ContainerReviewer>
@@ -171,7 +168,7 @@ const PullRequest: React.FC = () => {
                 onChange={({ target: { value } }) => setDescription(value)}
                 className="field"
                 maxLength={191}
-                rows={5} placeholder="Describe your pull request..." />
+                rows={5} placeholder="Descreva o pull request" />
             <p>{description ? description.length + '  ' : '0  '}/ 191</p>
             <br />
             <label>Adicionar reviewers</label>

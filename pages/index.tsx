@@ -83,7 +83,7 @@ const App: React.FC = () => {
             const result: any = await Api.post("/createRepository", {
                 name: titleRepository,
                 description: descriptionRepository,
-                language: languageRepository
+                language: languageRepository || ''
             });
 
             if (!result.error) {
@@ -102,9 +102,9 @@ const App: React.FC = () => {
         <Container>
             <Title>Criar novo repositório</Title>
             <FormRow>
-                <input type="text" placeholder="Nome do repositório" />
-                <input type="text" placeholder="Descrição" />
-                <select>
+                <input type="text" placeholder="Nome do repositório" onChange={({ target: { value } }) => setTitleRepository(value)} />
+                <input type="text" placeholder="Descrição" onChange={({ target: { value } }) => setDescriptionRepository(value)} />
+                <select onChange={({ target: { value } }) => setLanguageRepositoru(value)}>
                     {
                         languages.map(item => {
                             return (

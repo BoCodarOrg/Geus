@@ -1,4 +1,8 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+interface IPropsCircleStatus {
+    status?: number
+}
 
 const Reviewers = styled.div`
     background: #efefefef;
@@ -30,4 +34,28 @@ const IconReviewer = styled.div`
     cursor: pointer;
 `;
 
-export  { Reviewers, IconReviewer, ContainerReviewer };
+const Status = styled.div<IPropsCircleStatus>`
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    ${props => {
+        if (props.status === 0) {
+            return css`background-color: green;`;
+        } else if (props.status === 1) {
+            return css`background-color: blue ;`
+        } else if (props.status === 2) {
+            return css`background-color: red;`
+        }
+    }}
+`;
+
+const BoxContent = styled.div`
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 10px;
+`;
+
+export { Reviewers, IconReviewer, ContainerReviewer, Status, BoxContent };

@@ -50,4 +50,19 @@ export const Container = styled.div`
     color: #ccc;
     cursor: not-allowed;
   }
+
+  h1.inline {
+      display: inline-block;
+  }
+
+  h1.tiny{
+    font-weight: 300;
+  }
+`;
+
+export const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: #ccc;
+  margin: 10px 0;
 `;

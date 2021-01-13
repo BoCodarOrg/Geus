@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Container } from 'react-bootstrap';
-
-
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -11,22 +7,25 @@ import axios from 'axios';
 import Refractor from 'react-refractor';
 
 import git from 'refractor/lang/git'
+import { Container, Divider } from '../../src/styles/main';
+import { ContainerReviewer } from '../../src/styles/pullrequest';
+import { Status, Title, BoxConversation } from '../../src/styles/Diff'
+import IconUsers from '../../src/components/IconUsers';
 
 Refractor.registerLanguage(git)
 
 const Diff: React.FC = () => {
-    const [diff, setDiff] = useState<Array<string>>();
+    const [diff, setDiff] = useState<any>();
     const [conflicts, setConflicts] = useState<Array<number>>([]);
 
     const route = useRouter();
-    const { title, description, origin, destination, id, repos } = route.query;
+    const { title, description, origin, destination, id, repos, status, author, prId } = route.query;
 
     useEffect(() => {
         async function takeDiff() {
             const { data } = await axios.get(`http://localhost:3001/diff/${repos}/${id}`);
-
             if (!data.error) {
-                const diffs: Array<string> = data.data.filter(item => item !== '');
+                const diffs: Array<string> = data.data.diff.filter(item => item !== '');
 
                 const auxConfilcts: Array<number> = [];
                 diffs.forEach((file, index) => {
@@ -34,51 +33,81 @@ const Diff: React.FC = () => {
                         auxConfilcts.push(index);
                     }
                 });
+                data.data.diff = diffs;
                 setConflicts(auxConfilcts);
-                setDiff(diffs);
+                setDiff(data.data);
             } else {
                 alert(data.data)
             }
 
         };
-
-        takeDiff();
+        if (parseInt(status[0]) === 0) {
+            takeDiff();
+        }
     }, []);
 
     const onHandlerMerge = async () => {
         try {
-            const response = await axios.post(`http://localhost:3001/${repos}/merge`, { origin: `${origin}`.replace('*', '').trim(), destination: `${destination}`.replace('*', '').trim() })
+            const response = await axios.post(`http://localhost:3001/${repos}/merge`, {
+                origin,
+                destination,
+                status: 1,
+                id: prId
+            })
             alert(response.data.data);
         } catch (e) {
             console.error(e);
         }
     }
 
+    const checkTextStatus = () => {
+        const stts = parseInt(status[0]);
+        if (stts === 0) {
+            return "Aberto"
+        } else if (stts === 1) {
+            return "Merged"
+        } else {
+            return "Rejeitado"
+        }
+    }
+
     return (
         <Container>
-            <br />
-            <h1>
-                {title}
-            </h1>
-            <p>
-                Diff {origin} from {destination}
-            </p>
-            <cite>
-                {description}
-            </cite>
-            <br />
-            <p>
-                Conflicts number {conflicts.length}
-            </p>
-            <br />
+            <Title>
+                <p>{title} <p className="gray">#{prId}</p></p>
+                <p className="tiny">{origin} para {destination}</p>
+            </Title>
+
+            <Status status={parseInt(status[0])}>
+                {
+                    //1 - Merged, 2 - Rejected, 3 - Conflict, 0 - Opened
+                    checkTextStatus()
+                }
+            </Status>
+            <Divider />
+            <label>Reviewers</label>
+            <ContainerReviewer>
+                {
+                    diff && diff.reviewers.map(item => <IconUsers name={item.User.name} />)
+                }
+            </ContainerReviewer>
+            <Divider />
+            <BoxConversation>
+                <div>
+                    {author}
+                </div>
+                <div>
+                    {description}
+                </div>
+            </BoxConversation>
             <br />
             {
-                diff && diff.map((item, index) => {
+                diff && diff.diff.map((item, index) => {
                     if (conflicts.length > 0) {
                         if (conflicts.indexOf(index) !== -1) {
                             return (
                                 <div>
-                                    <h5>Conflict file</h5>
+                                    <h5>Arquivo com conflito</h5>
                                     <Refractor language="git" value={item} />
                                 </div>
                             )
@@ -87,7 +116,7 @@ const Diff: React.FC = () => {
                     return (<Refractor language="git" value={item} />)
                 }) || "no changes"}
 
-            <Button variant="success" disabled={!diff || conflicts.length > 0} onClick={onHandlerMerge}>Merge</Button>
+            <button className="success" disabled={!diff || conflicts.length > 0 || parseInt(status[0]) !== 0} onClick={onHandlerMerge}>Merge</button>
             <br />
             <br />
         </Container >

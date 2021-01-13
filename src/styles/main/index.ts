@@ -66,3 +66,22 @@ export const Divider = styled.div`
   background: #ccc;
   margin: 10px 0;
 `;
+
+export const FormRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin: 10px 0;
+  width: 100%;
+
+  input {
+    width: 100%;
+    flex: 1;
+    margin: 0 10px;
+  }
+
+  button{
+    margin-left: 10px;
+  }
+
+`;

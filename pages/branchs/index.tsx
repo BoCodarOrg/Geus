@@ -6,6 +6,7 @@ import uuid from 'react-uuid';
 import { useRouter } from 'next/router';
 import { Container } from '../../src/styles/main';
 import List from '../../src/components/List';
+import Api from '../../src/server';
 
 export interface BranchModel {
     id?: number,
@@ -20,7 +21,7 @@ const Branchs: React.FC = () => {
 
     useEffect(() => {
         async function takeBranch() {
-            const response = await axios.get(`http://localhost:3001/${route.query.repoName}/`);
+            const response = await Api.get(`/${route.query.repoName}/`);
             setBranches(response.data.data);
         }
         takeBranch();
